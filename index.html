@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gradient Lab - Create Beautiful Gradients</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>🎨 Gradient Lab</h1>
+        <p>Create stunning gradients with just a few clicks</p>
+      </header>
+
+      <main>
+        <div class="gradient-preview">
+          <div id="gradient-display" class="gradient-display"></div>
+          <div class="gradient-info">
+            <span id="gradient-type">Linear Gradient</span>
+            <span id="gradient-angle">45deg</span>
+          </div>
+        </div>
+
+        <div class="controls">
+          <div class="control-section">
+            <h3>Colors</h3>
+            <div class="color-inputs">
+              <div class="color-input">
+                <label for="color1">Color 1</label>
+                <input type="color" id="color1" value="#ff6b6b" />
+              </div>
+              <div class="color-input">
+                <label for="color2">Color 2</label>
+                <input type="color" id="color2" value="#4ecdc4" />
+              </div>
+              <div class="color-input">
+                <label for="color3">Color 3 (Optional)</label>
+                <input type="color" id="color3" value="#45b7d1" />
+              </div>
+            </div>
+          </div>
+
+          <div class="control-section">
+            <h3>Gradient Type</h3>
+            <div class="gradient-type-controls">
+              <button class="type-btn active" data-type="linear">Linear</button>
+              <button class="type-btn" data-type="radial">Radial</button>
+              <button class="type-btn" data-type="conic">Conic</button>
+            </div>
+          </div>
+
+          <div class="control-section">
+            <h3>Parameters</h3>
+            <div class="parameter-controls">
+              <div class="parameter">
+                <label for="angle">Angle/Direction</label>
+                <input type="range" id="angle" min="0" max="360" value="45" />
+                <span id="angle-value">45°</span>
+              </div>
+              <div class="parameter">
+                <label for="blend">Blend Mode</label>
+                <select id="blend">
+                  <option value="normal">Normal</option>
+                  <option value="multiply">Multiply</option>
+                  <option value="screen">Screen</option>
+                  <option value="overlay">Overlay</option>
+                  <option value="soft-light">Soft Light</option>
+                  <option value="hard-light">Hard Light</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <button id="generate-btn" class="btn btn-primary">
+              🎲 Generate New
+            </button>
+            <button id="randomize-btn" class="btn btn-secondary">
+              🎯 Randomize All
+            </button>
+          </div>
+        </div>
+
+        <div class="download-section">
+          <h3>Download Options</h3>
+          <div class="download-controls">
+            <div class="format-selector">
+              <label for="format">Format:</label>
+              <select id="format">
+                <option value="png">PNG</option>
+                <option value="jpg">JPG</option>
+                <option value="svg">SVG</option>
+              </select>
+            </div>
+            <div class="resolution-selector">
+              <label for="resolution">Resolution:</label>
+              <select id="resolution">
+                <option value="1920x1080">1920x1080</option>
+                <option value="2560x1440">2560x1440</option>
+                <option value="3840x2160">3840x2160</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            <div
+              id="custom-resolution"
+              class="custom-resolution"
+              style="display: none"
+            >
+              <input
+                type="number"
+                id="custom-width"
+                placeholder="Width"
+                min="1"
+                max="8000"
+              />
+              <span>x</span>
+              <input
+                type="number"
+                id="custom-height"
+                placeholder="Height"
+                min="1"
+                max="8000"
+              />
+            </div>
+          </div>
+          <button id="download-btn" class="btn btn-download">
+            📥 Download Gradient
+          </button>
+        </div>
+
+        <div class="css-output">
+          <h3>CSS Code</h3>
+          <div class="code-container">
+            <pre id="css-code">
+background: linear-gradient(45deg, #ff6b6b, #4ecdc4);</pre
+            >
+            <button id="copy-css" class="btn btn-copy">📋 Copy CSS</button>
+          </div>
+        </div>
+      </main>
+
+      <footer>
+        <p>Made with ❤️ by Gradient Lab</p>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
