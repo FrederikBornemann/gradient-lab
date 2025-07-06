@@ -1,154 +1,311 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gradient Lab - Create Beautiful Gradients</title>
+    <title>Gradient Lab - Modern Gradient Generator</title>
     <link rel="stylesheet" href="styles.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
   </head>
-  <body>
-    <div class="container">
-      <header>
-        <h1>🎨 Gradient Lab</h1>
-        <p>Create stunning gradients with just a few clicks</p>
+  <body class="min-h-screen bg-background font-sans antialiased">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+      <!-- Header -->
+      <header class="text-center mb-12">
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <div
+            class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center"
+          >
+            <i data-lucide="palette" class="w-6 h-6 text-white"></i>
+          </div>
+          <h1
+            class="text-4xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent"
+          >
+            Gradient Lab
+          </h1>
+        </div>
+        <p class="text-muted-foreground text-lg">
+          Create stunning gradients with a modern, minimal interface
+        </p>
+
+        <!-- Theme Toggle -->
+        <div class="flex items-center justify-center gap-2 mt-6">
+          <i data-lucide="sun" class="w-4 h-4"></i>
+          <button
+            id="theme-toggle"
+            class="switch peer"
+            role="switch"
+            aria-checked="true"
+          >
+            <span class="switch-thumb"></span>
+          </button>
+          <i data-lucide="moon" class="w-4 h-4"></i>
+        </div>
       </header>
 
-      <main>
-        <div class="gradient-preview">
-          <div id="gradient-display" class="gradient-display"></div>
-          <div class="gradient-info">
-            <span id="gradient-type">Linear Gradient</span>
-            <span id="gradient-angle">45deg</span>
-          </div>
-        </div>
-
-        <div class="controls">
-          <div class="control-section">
-            <h3>Colors</h3>
-            <div class="color-inputs">
-              <div class="color-input">
-                <label for="color1">Color 1</label>
-                <input type="color" id="color1" value="#ff6b6b" />
-              </div>
-              <div class="color-input">
-                <label for="color2">Color 2</label>
-                <input type="color" id="color2" value="#4ecdc4" />
-              </div>
-              <div class="color-input">
-                <label for="color3">Color 3 (Optional)</label>
-                <input type="color" id="color3" value="#45b7d1" />
-              </div>
-            </div>
-          </div>
-
-          <div class="control-section">
-            <h3>Gradient Type</h3>
-            <div class="gradient-type-controls">
-              <button class="type-btn active" data-type="linear">Linear</button>
-              <button class="type-btn" data-type="radial">Radial</button>
-              <button class="type-btn" data-type="conic">Conic</button>
-            </div>
-          </div>
-
-          <div class="control-section">
-            <h3>Parameters</h3>
-            <div class="parameter-controls">
-              <div class="parameter">
-                <label for="angle">Angle/Direction</label>
-                <input type="range" id="angle" min="0" max="360" value="45" />
-                <span id="angle-value">45°</span>
-              </div>
-              <div class="parameter">
-                <label for="blend">Blend Mode</label>
-                <select id="blend">
-                  <option value="normal">Normal</option>
-                  <option value="multiply">Multiply</option>
-                  <option value="screen">Screen</option>
-                  <option value="overlay">Overlay</option>
-                  <option value="soft-light">Soft Light</option>
-                  <option value="hard-light">Hard Light</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="action-buttons">
-            <button id="generate-btn" class="btn btn-primary">
-              🎲 Generate New
-            </button>
-            <button id="randomize-btn" class="btn btn-secondary">
-              🎯 Randomize All
-            </button>
-          </div>
-        </div>
-
-        <div class="download-section">
-          <h3>Download Options</h3>
-          <div class="download-controls">
-            <div class="format-selector">
-              <label for="format">Format:</label>
-              <select id="format">
-                <option value="png">PNG</option>
-                <option value="jpg">JPG</option>
-                <option value="svg">SVG</option>
-              </select>
-            </div>
-            <div class="resolution-selector">
-              <label for="resolution">Resolution:</label>
-              <select id="resolution">
-                <option value="1920x1080">1920x1080</option>
-                <option value="2560x1440">2560x1440</option>
-                <option value="3840x2160">3840x2160</option>
-                <option value="custom">Custom</option>
-              </select>
-            </div>
+      <!-- Main Content -->
+      <main class="space-y-8">
+        <!-- Gradient Preview -->
+        <div class="card p-6">
+          <div class="gradient-preview p-6">
+            <div id="gradient-display" class="gradient-display mb-4"></div>
             <div
-              id="custom-resolution"
-              class="custom-resolution"
-              style="display: none"
+              class="flex items-center justify-between text-sm text-muted-foreground"
             >
-              <input
-                type="number"
-                id="custom-width"
-                placeholder="Width"
-                min="1"
-                max="8000"
-              />
-              <span>x</span>
-              <input
-                type="number"
-                id="custom-height"
-                placeholder="Height"
-                min="1"
-                max="8000"
-              />
+              <span id="gradient-type">Linear Gradient</span>
+              <span id="gradient-angle">45deg</span>
             </div>
           </div>
-          <button id="download-btn" class="btn btn-download">
-            📥 Download Gradient
-          </button>
         </div>
 
-        <div class="css-output">
-          <h3>CSS Code</h3>
-          <div class="code-container">
-            <pre id="css-code">
-background: linear-gradient(45deg, #ff6b6b, #4ecdc4);</pre
-            >
-            <button id="copy-css" class="btn btn-copy">📋 Copy CSS</button>
+        <!-- Controls Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Left Column -->
+          <div class="space-y-6">
+            <!-- Colors Section -->
+            <div class="card p-6">
+              <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <i data-lucide="droplets" class="w-5 h-5"></i>
+                Colors
+              </h3>
+              <div class="space-y-4">
+                <div class="flex items-center gap-4">
+                  <label class="text-sm font-medium min-w-16">Color 1</label>
+                  <input
+                    type="color"
+                    id="color1"
+                    value="#3b82f6"
+                    class="color-picker"
+                  />
+                  <span class="text-sm text-muted-foreground">#3b82f6</span>
+                </div>
+                <div class="flex items-center gap-4">
+                  <label class="text-sm font-medium min-w-16">Color 2</label>
+                  <input
+                    type="color"
+                    id="color2"
+                    value="#8b5cf6"
+                    class="color-picker"
+                  />
+                  <span class="text-sm text-muted-foreground">#8b5cf6</span>
+                </div>
+                <div class="flex items-center gap-4">
+                  <label class="text-sm font-medium min-w-16">Color 3</label>
+                  <input
+                    type="color"
+                    id="color3"
+                    value="#ec4899"
+                    class="color-picker"
+                  />
+                  <span class="text-sm text-muted-foreground">#ec4899</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gradient Type Section -->
+            <div class="card p-6">
+              <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <i data-lucide="layers" class="w-5 h-5"></i>
+                Gradient Type
+              </h3>
+              <div class="tabs w-full">
+                <button
+                  class="tab flex-1"
+                  data-type="linear"
+                  data-state="active"
+                >
+                  Linear
+                </button>
+                <button
+                  class="tab flex-1"
+                  data-type="radial"
+                  data-state="inactive"
+                >
+                  Radial
+                </button>
+                <button
+                  class="tab flex-1"
+                  data-type="conic"
+                  data-state="inactive"
+                >
+                  Conic
+                </button>
+              </div>
+            </div>
+
+            <!-- Parameters Section -->
+            <div class="card p-6">
+              <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <i data-lucide="sliders-horizontal" class="w-5 h-5"></i>
+                Parameters
+              </h3>
+              <div class="space-y-6">
+                <div class="space-y-2">
+                  <label class="text-sm font-medium">Angle / Direction</label>
+                  <div class="slider">
+                    <input
+                      type="range"
+                      id="angle"
+                      min="0"
+                      max="360"
+                      value="45"
+                      class="sr-only"
+                    />
+                    <div class="slider-track">
+                      <div class="slider-range" style="width: 12.5%"></div>
+                    </div>
+                    <div class="slider-thumb" style="left: 12.5%"></div>
+                  </div>
+                  <div
+                    class="flex justify-between text-sm text-muted-foreground"
+                  >
+                    <span>0°</span>
+                    <span id="angle-value">45°</span>
+                    <span>360°</span>
+                  </div>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="text-sm font-medium">Blend Mode</label>
+                  <select id="blend" class="select">
+                    <option value="normal">Normal</option>
+                    <option value="multiply">Multiply</option>
+                    <option value="screen">Screen</option>
+                    <option value="overlay">Overlay</option>
+                    <option value="soft-light">Soft Light</option>
+                    <option value="hard-light">Hard Light</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+              <button id="generate-btn" class="btn btn-primary flex-1">
+                <i data-lucide="shuffle" class="w-4 h-4 mr-2"></i>
+                Generate New
+              </button>
+              <button id="randomize-btn" class="btn btn-outline flex-1">
+                <i data-lucide="zap" class="w-4 h-4 mr-2"></i>
+                Randomize All
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="space-y-6">
+            <!-- Download Section -->
+            <div class="card p-6">
+              <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <i data-lucide="download" class="w-5 h-5"></i>
+                Download Options
+              </h3>
+              <div class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="space-y-2">
+                    <label class="text-sm font-medium">Format</label>
+                    <select id="format" class="select">
+                      <option value="png">PNG</option>
+                      <option value="jpg">JPG</option>
+                      <option value="svg">SVG</option>
+                    </select>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-sm font-medium">Resolution</label>
+                    <select id="resolution" class="select">
+                      <option value="1920x1080">1920x1080</option>
+                      <option value="2560x1440">2560x1440</option>
+                      <option value="3840x2160">3840x2160</option>
+                      <option value="custom">Custom</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div
+                  id="custom-resolution"
+                  class="grid grid-cols-2 gap-4"
+                  style="display: none"
+                >
+                  <div class="space-y-2">
+                    <label class="text-sm font-medium">Width</label>
+                    <input
+                      type="number"
+                      id="custom-width"
+                      placeholder="1920"
+                      min="1"
+                      max="8000"
+                      class="input"
+                    />
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-sm font-medium">Height</label>
+                    <input
+                      type="number"
+                      id="custom-height"
+                      placeholder="1080"
+                      min="1"
+                      max="8000"
+                      class="input"
+                    />
+                  </div>
+                </div>
+
+                <button id="download-btn" class="btn btn-primary w-full">
+                  <i data-lucide="download" class="w-4 h-4 mr-2"></i>
+                  Download Gradient
+                </button>
+              </div>
+            </div>
+
+            <!-- CSS Output Section -->
+            <div class="card p-6">
+              <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <i data-lucide="code" class="w-5 h-5"></i>
+                CSS Code
+              </h3>
+              <div class="relative">
+                <pre
+                  id="css-code"
+                  class="bg-muted rounded-lg p-4 text-sm font-mono overflow-x-auto"
+                >
+background: linear-gradient(45deg, #3b82f6, #8b5cf6, #ec4899);</pre
+                >
+                <button
+                  id="copy-css"
+                  class="btn btn-ghost absolute top-2 right-2 p-2"
+                >
+                  <i data-lucide="copy" class="w-4 h-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Gradient History -->
+            <div class="card p-6">
+              <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                <i data-lucide="clock" class="w-5 h-5"></i>
+                Recent Gradients
+              </h3>
+              <div id="gradient-history" class="grid grid-cols-3 gap-2">
+                <!-- History items will be populated by JavaScript -->
+              </div>
+            </div>
           </div>
         </div>
       </main>
 
-      <footer>
-        <p>Made with ❤️ by Gradient Lab</p>
+      <!-- Footer -->
+      <footer class="text-center mt-16 text-muted-foreground">
+        <p class="text-sm">Made with ❤️ by Gradient Lab</p>
       </footer>
     </div>
 
     <script src="script.js"></script>
+    <script>
+      // Initialize Lucide icons
+      lucide.createIcons();
+    </script>
   </body>
 </html>

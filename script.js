@@ -1,19 +1,25 @@
-class GradientLab {
+class ModernGradientLab {
   constructor() {
     this.currentGradient = {
       type: "linear",
-      colors: ["#ff6b6b", "#4ecdc4", "#45b7d1"],
+      colors: ["#3b82f6", "#8b5cf6", "#ec4899"],
       angle: 45,
       blendMode: "normal",
     };
+
+    this.gradientHistory = [];
+    this.maxHistoryItems = 9;
 
     this.init();
   }
 
   init() {
     this.setupEventListeners();
+    this.setupThemeToggle();
+    this.setupCustomSlider();
     this.updateGradient();
     this.updateCSSOutput();
+    this.updateColorLabels();
   }
 
   setupEventListeners() {
@@ -22,27 +28,30 @@ class GradientLab {
       this.currentGradient.colors[0] = e.target.value;
       this.updateGradient();
       this.updateCSSOutput();
+      this.updateColorLabels();
     });
 
     document.getElementById("color2").addEventListener("input", (e) => {
       this.currentGradient.colors[1] = e.target.value;
       this.updateGradient();
       this.updateCSSOutput();
+      this.updateColorLabels();
     });
 
     document.getElementById("color3").addEventListener("input", (e) => {
       this.currentGradient.colors[2] = e.target.value;
       this.updateGradient();
       this.updateCSSOutput();
+      this.updateColorLabels();
     });
 
     // Gradient type buttons
-    document.querySelectorAll(".type-btn").forEach((btn) => {
+    document.querySelectorAll(".tab").forEach((btn) => {
       btn.addEventListener("click", (e) => {
         document
-          .querySelectorAll(".type-btn")
-          .forEach((b) => b.classList.remove("active"));
-        e.target.classList.add("active");
+          .querySelectorAll(".tab")
+          .forEach((b) => b.setAttribute("data-state", "inactive"));
+        e.target.setAttribute("data-state", "active");
         this.currentGradient.type = e.target.dataset.type;
         this.updateGradient();
         this.updateCSSOutput();
@@ -51,10 +60,9 @@ class GradientLab {
 
     // Angle slider
     const angleSlider = document.getElementById("angle");
-    const angleValue = document.getElementById("angle-value");
     angleSlider.addEventListener("input", (e) => {
       this.currentGradient.angle = parseInt(e.target.value);
-      angleValue.textContent = `${this.currentGradient.angle}°`;
+      this.updateSliderUI(e.target.value);
       this.updateGradient();
       this.updateCSSOutput();
     });
@@ -90,9 +98,132 @@ class GradientLab {
     document.getElementById("resolution").addEventListener("change", (e) => {
       const customResolution = document.getElementById("custom-resolution");
       if (e.target.value === "custom") {
-        customResolution.style.display = "flex";
+        customResolution.style.display = "grid";
       } else {
         customResolution.style.display = "none";
+      }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case "g":
+            e.preventDefault();
+            this.generateRandomGradient();
+            break;
+          case "r":
+            e.preventDefault();
+            this.randomizeAll();
+            break;
+          case "d":
+            e.preventDefault();
+            this.downloadGradient();
+            break;
+          case "c":
+            e.preventDefault();
+            this.copyCSSToClipboard();
+            break;
+        }
+      }
+    });
+  }
+
+  setupThemeToggle() {
+    const themeToggle = document.getElementById("theme-toggle");
+    const html = document.documentElement;
+
+    // Check for saved theme preference or default to dark
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    html.className = savedTheme;
+    themeToggle.setAttribute("aria-checked", savedTheme === "dark");
+
+    themeToggle.addEventListener("click", () => {
+      const currentTheme = html.className;
+      const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+      html.className = newTheme;
+      themeToggle.setAttribute("aria-checked", newTheme === "dark");
+      localStorage.setItem("theme", newTheme);
+
+      // Update Lucide icons for theme change
+      lucide.createIcons();
+    });
+  }
+
+  setupCustomSlider() {
+    const slider = document.querySelector(".slider");
+    const track = slider.querySelector(".slider-track");
+    const range = slider.querySelector(".slider-range");
+    const thumb = slider.querySelector(".slider-thumb");
+    const input = slider.querySelector("input[type='range']");
+
+    const updateSlider = (value) => {
+      const percent = ((value - input.min) / (input.max - input.min)) * 100;
+      range.style.width = `${percent}%`;
+      thumb.style.left = `${percent}%`;
+    };
+
+    // Initialize slider
+    updateSlider(input.value);
+
+    // Handle click on track
+    track.addEventListener("click", (e) => {
+      const rect = track.getBoundingClientRect();
+      const percent = (e.clientX - rect.left) / rect.width;
+      const value = Math.round(
+        percent * (input.max - input.min) + parseInt(input.min)
+      );
+      input.value = value;
+      updateSlider(value);
+      this.currentGradient.angle = value;
+      this.updateSliderUI(value);
+      this.updateGradient();
+      this.updateCSSOutput();
+    });
+
+    // Handle drag on thumb
+    let isDragging = false;
+
+    thumb.addEventListener("mousedown", () => {
+      isDragging = true;
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+
+      const rect = track.getBoundingClientRect();
+      const percent = Math.max(
+        0,
+        Math.min(1, (e.clientX - rect.left) / rect.width)
+      );
+      const value = Math.round(
+        percent * (input.max - input.min) + parseInt(input.min)
+      );
+      input.value = value;
+      updateSlider(value);
+      this.currentGradient.angle = value;
+      this.updateSliderUI(value);
+      this.updateGradient();
+      this.updateCSSOutput();
+    });
+
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+    });
+  }
+
+  updateSliderUI(value) {
+    document.getElementById("angle-value").textContent = `${value}°`;
+  }
+
+  updateColorLabels() {
+    const colorInputs = document.querySelectorAll("input[type='color']");
+    const colorLabels = document.querySelectorAll(".text-muted-foreground");
+
+    colorInputs.forEach((input, index) => {
+      if (colorLabels[index]) {
+        colorLabels[index].textContent = input.value.toUpperCase();
       }
     });
   }
@@ -129,6 +260,9 @@ class GradientLab {
 
     gradientDisplay.style.background = gradientCSS;
     gradientDisplay.style.mixBlendMode = this.currentGradient.blendMode;
+
+    // Add to history
+    this.addToHistory();
   }
 
   updateCSSOutput() {
@@ -159,6 +293,104 @@ class GradientLab {
     cssCode.textContent = css;
   }
 
+  addToHistory() {
+    const gradientString = JSON.stringify(this.currentGradient);
+
+    // Remove if already exists
+    this.gradientHistory = this.gradientHistory.filter(
+      (g) => JSON.stringify(g) !== gradientString
+    );
+
+    // Add to beginning
+    this.gradientHistory.unshift({ ...this.currentGradient });
+
+    // Keep only max items
+    if (this.gradientHistory.length > this.maxHistoryItems) {
+      this.gradientHistory = this.gradientHistory.slice(
+        0,
+        this.maxHistoryItems
+      );
+    }
+
+    this.updateHistoryUI();
+  }
+
+  updateHistoryUI() {
+    const historyContainer = document.getElementById("gradient-history");
+    historyContainer.innerHTML = "";
+
+    this.gradientHistory.forEach((gradient, index) => {
+      const historyItem = document.createElement("div");
+      historyItem.className = "relative group cursor-pointer";
+
+      const colors = gradient.colors.filter((color) => color);
+      let gradientCSS = "";
+
+      switch (gradient.type) {
+        case "linear":
+          gradientCSS = `linear-gradient(${gradient.angle}deg, ${colors.join(
+            ", "
+          )});`;
+          break;
+        case "radial":
+          gradientCSS = `radial-gradient(circle, ${colors.join(", ")});`;
+          break;
+        case "conic":
+          gradientCSS = `conic-gradient(from ${
+            gradient.angle
+          }deg, ${colors.join(", ")});`;
+          break;
+      }
+
+      historyItem.innerHTML = `
+        <div class="w-full h-16 rounded-lg border-2 border-border transition-all duration-200 group-hover:border-primary/50 group-hover:scale-105" 
+             style="background: ${gradientCSS}">
+        </div>
+        <button class="absolute inset-0 w-full h-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/20 rounded-lg flex items-center justify-center">
+          <i data-lucide="refresh-cw" class="w-4 h-4 text-white"></i>
+        </button>
+      `;
+
+      historyItem.addEventListener("click", () => {
+        this.loadGradient(gradient);
+      });
+
+      historyContainer.appendChild(historyItem);
+    });
+
+    // Reinitialize Lucide icons
+    lucide.createIcons();
+  }
+
+  loadGradient(gradient) {
+    this.currentGradient = { ...gradient };
+
+    // Update UI
+    document.getElementById("color1").value = gradient.colors[0];
+    document.getElementById("color2").value = gradient.colors[1];
+    document.getElementById("color3").value = gradient.colors[2];
+
+    // Update gradient type tabs
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.setAttribute(
+        "data-state",
+        btn.dataset.type === gradient.type ? "active" : "inactive"
+      );
+    });
+
+    // Update angle slider
+    document.getElementById("angle").value = gradient.angle;
+    this.updateSliderUI(gradient.angle);
+
+    // Update blend mode
+    document.getElementById("blend").value = gradient.blendMode;
+
+    // Update displays
+    this.updateGradient();
+    this.updateCSSOutput();
+    this.updateColorLabels();
+  }
+
   generateRandomGradient() {
     // Generate random colors
     this.currentGradient.colors = [
@@ -174,6 +406,7 @@ class GradientLab {
 
     this.updateGradient();
     this.updateCSSOutput();
+    this.updateColorLabels();
   }
 
   randomizeAll() {
@@ -182,17 +415,19 @@ class GradientLab {
     const randomType = types[Math.floor(Math.random() * types.length)];
 
     document
-      .querySelectorAll(".type-btn")
-      .forEach((btn) => btn.classList.remove("active"));
-    document
-      .querySelector(`[data-type="${randomType}"]`)
-      .classList.add("active");
+      .querySelectorAll(".tab")
+      .forEach((btn) =>
+        btn.setAttribute(
+          "data-state",
+          btn.dataset.type === randomType ? "active" : "inactive"
+        )
+      );
     this.currentGradient.type = randomType;
 
     // Random angle
     const randomAngle = Math.floor(Math.random() * 360);
     document.getElementById("angle").value = randomAngle;
-    document.getElementById("angle-value").textContent = `${randomAngle}°`;
+    this.updateSliderUI(randomAngle);
     this.currentGradient.angle = randomAngle;
 
     // Random blend mode
@@ -376,13 +611,17 @@ class GradientLab {
 
       // Show feedback
       const copyBtn = document.getElementById("copy-css");
-      const originalText = copyBtn.textContent;
-      copyBtn.textContent = "✅ Copied!";
-      copyBtn.style.background = "#28a745";
+      const originalIcon = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>';
+      copyBtn.classList.add("text-green-500");
+
+      // Reinitialize icon
+      lucide.createIcons();
 
       setTimeout(() => {
-        copyBtn.textContent = originalText;
-        copyBtn.style.background = "#667eea";
+        copyBtn.innerHTML = originalIcon;
+        copyBtn.classList.remove("text-green-500");
+        lucide.createIcons();
       }, 2000);
     } catch (err) {
       console.error("Failed to copy CSS:", err);
@@ -393,5 +632,5 @@ class GradientLab {
 
 // Initialize the app when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
-  new GradientLab();
+  new ModernGradientLab();
 });
